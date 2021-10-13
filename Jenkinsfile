@@ -44,7 +44,7 @@ pipeline {
         
         stage('push image') {
             steps {
-                echo "======== Pushing image to registry ========="
+                echo "======== Pushing image to karim's registry ========="
                 withCredentials([usernamePassword(credentialsId: 'karim-docker', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) 
                 {
                 sh """
@@ -52,6 +52,7 @@ pipeline {
                 docker-compose push
                 """
                 }
+                     echo "======== Pushing image to arafat's registry ========="
                    withCredentials([usernamePassword(credentialsId: 'arafat_dockerhub', usernameVariable: 'USERNAME_ARAFAT', passwordVariable: 'PASSWORD_ARAFAT')]) 
                 {
                 sh """
