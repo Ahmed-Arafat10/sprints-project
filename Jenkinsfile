@@ -52,6 +52,13 @@ pipeline {
                 docker-compose push
                 """
                 }
+                   withCredentials([usernamePassword(credentialsId: 'arafat_dockerhub', usernameVariable: 'USERNAME_ARAFAT', passwordVariable: 'PASSWORD_ARAFAT')]) 
+                {
+                sh """
+                docker login -u ${USERNAME_ARAFAT}  -p ${PASSWORD_ARAFAT}
+                docker-compose push
+                """
+                }
             }
             post {
                 success {
