@@ -1,0 +1,48 @@
+---------------
+1) STEPS for AWS:
+---------------
+- Open your AWS account and then create EC2 instance for Ubuntu {Default configurtation}
+
+- After downloading key pair from AWS take a copy from it and then change permission to 400
+$ cp ~/Downloads/key_pair_name.pem  <new_path>
+$ chmod 400 key_pair_name.pem
+
+- Then copy instance public IPv4 address and SSH it
+$ ssh -i key_pair_name.pem ubuntu@IPv4_Address
+-> ubuntu : username of EC2 instance image {Ubuntu 20 in this case}
+
+- To make any server a slave for Jenkins I need to install first open-jdk and to have
+SSH {Private key} then create a Dir. in which Jenkins server can save pipelines in it {workspace Dir. that containes pipelines} ,
+all of this will be done in slave server {Ubuntu AWS instance after SSH it}
+$ apt update
+$ apt-get install openjdk-8-jdk     {run it inside Ubuntu instance}
+$ mkdir Jenkins
+
+- Go to {Jenkins dashboard} > {manage nodes and clouds} > {new node} > then name it and
+enable {permanent agent} option then hit okay button
+
+- In {remote root directory} choose path in which Jenkins will save files in it
+{in this case its /home/Ubuntu/Jenkins} -> Jenkins here is a Dir. created when we were inside
+Ubuntu instance after SSH it, then give it a label {AWS in this example}
+in launch method choose {launch agent via SSH}
+
+Host -> copy AWS EC2 instance public IPv4 Address
+
+Credential -> add SSH credential data {just press Add button}, its type is {SSH name with private key}
+username -> ubuntu
+ID -> any name {SSH-AWS-Slave in this case}
+private key {choose enter directly} -> key is stored in key_pair_name.pem which has been
+downloaded from AWS website, take WHOLE text copy and but it in input
+
+Host key verification strategy -> Non verifying verification strategy
+Then hit go
+
+- After node is built go to {new items} and then create a pipeline, in pipeline script
+choose {GitHub + maven} but change {agent any} in groovy code to :
+agent {label "SSH-AWS-Slave"} // SSH-AWS-Slave is name{label} of node
+
+But to build this example go to {global tool configuration} menu and add Maven named [M3] as in pipeline script
+
+- Advantage of Slave node is that if created pipeline drop down server, EC2 will be dropped down not Jenkins server
+
+
